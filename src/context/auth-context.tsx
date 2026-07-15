@@ -1,5 +1,7 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 
+import { Branch } from '@/lib/branches';
+
 type UserRole = 'employee' | 'manager';
 
 type ManagerLoginResult = {
@@ -12,6 +14,8 @@ type AuthContextValue = {
   role: UserRole | null;
   loginAsEmployee: () => void;
   loginAsManager: (email: string, password: string) => ManagerLoginResult;
+  selectedBranch: Branch | null;
+  setSelectedBranch: (branch: Branch | null) => void;
   logout: () => void;
 };
 
@@ -22,12 +26,14 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       isAuthenticated: role !== null,
       role,
       loginAsEmployee: () => {
+        setSelectedBranch(null);
         setRole('employee');
       },
       loginAsManager: (email, password) => {
@@ -41,15 +47,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
         }
 
+        setSelectedBranch(null);
         setRole('manager');
 
         return { success: true };
       },
+      selectedBranch,
+      setSelectedBranch,
       logout: () => {
+        setSelectedBranch(null);
         setRole(null);
       },
     }),
-    [role],
+    [role, selectedBranch],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

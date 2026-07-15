@@ -1,6 +1,5 @@
 import { FirebaseApp, FirebaseOptions, getApp, getApps, initializeApp } from 'firebase/app';
-import { Firestore, getFirestore } from 'firebase/firestore';
-
+import { Firestore, initializeFirestore } from 'firebase/firestore';
 type RequiredFirebaseConfig = {
   apiKey: string | undefined;
   authDomain: string | undefined;
@@ -18,6 +17,8 @@ const firebaseConfig: RequiredFirebaseConfig = {
   messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
+const firebaseDatabaseId = process.env.EXPO_PUBLIC_FIREBASE_DATABASE_ID;
+let dbInstance: Firestore | null = null;
 
 function getMissingConfigKeys() {
   return Object.entries(firebaseConfig)
@@ -46,5 +47,23 @@ export function getFirebaseApp(): FirebaseApp {
 }
 
 export function getDb(): Firestore {
-  return getFirestore(getFirebaseApp());
+  if (dbInstance) {
+    return dbInstance;
+  }
+
+  const app = getFirebaseApp();
+
+  dbInstance = firebaseDatabaseId
+    ? initializeFirestore(
+        app,
+        {
+          experimentalForceLongPolling: true,
+        },
+        firebaseDatabaseId,
+      )
+    : initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+      });
+
+  return dbInstance;
 }

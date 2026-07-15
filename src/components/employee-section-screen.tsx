@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -34,44 +34,48 @@ export function EmployeeSectionScreen({
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerText}>
-              <ThemedText type="title" style={styles.title}>
-                {title}
-              </ThemedText>
-              <ThemedText themeColor="textSecondary">{subtitle}</ThemedText>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}>
+          <ThemedView style={styles.heroSection}>
+            <View style={styles.headerRow}>
+              <View style={styles.headerText}>
+                <ThemedText type="title" style={styles.title}>
+                  {title}
+                </ThemedText>
+                <ThemedText themeColor="textSecondary">{subtitle}</ThemedText>
+              </View>
+
+              <View style={styles.roleBadge}>
+                <ThemedText type="smallBold" style={styles.roleBadgeText}>
+                  {badgeLabel}
+                </ThemedText>
+              </View>
             </View>
 
-            <View style={styles.roleBadge}>
-              <ThemedText type="smallBold" style={styles.roleBadgeText}>
-                {badgeLabel}
+            <View style={styles.card}>
+              <ThemedText type="subtitle" style={styles.primaryText}>
+                {cardTitle}
               </ThemedText>
+              <ThemedText style={styles.primaryText}>{cardDescription}</ThemedText>
             </View>
-          </View>
 
-          <View style={styles.card}>
-            <ThemedText type="subtitle" style={styles.primaryText}>
-              {cardTitle}
-            </ThemedText>
-            <ThemedText style={styles.primaryText}>{cardDescription}</ThemedText>
-          </View>
+            <View style={styles.card}>
+              <ThemedText type="smallBold" style={styles.primaryText}>
+                {detailsTitle}
+              </ThemedText>
+              <ThemedText style={styles.secondaryText}>{detailsDescription}</ThemedText>
 
-          <View style={styles.card}>
-            <ThemedText type="smallBold" style={styles.primaryText}>
-              {detailsTitle}
-            </ThemedText>
-            <ThemedText style={styles.secondaryText}>{detailsDescription}</ThemedText>
+              {children}
 
-            {children}
-
-            {actionLabel && onActionPress ? (
-              <Pressable onPress={onActionPress} style={styles.actionButton}>
-                <ThemedText style={styles.actionText}>{actionLabel}</ThemedText>
-              </Pressable>
-            ) : null}
-          </View>
-        </ThemedView>
+              {actionLabel && onActionPress ? (
+                <Pressable onPress={onActionPress} style={styles.actionButton}>
+                  <ThemedText style={styles.actionText}>{actionLabel}</ThemedText>
+                </Pressable>
+              ) : null}
+            </View>
+          </ThemedView>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -93,11 +97,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
+  scrollContent: {
+    flexGrow: 1,
+    paddingVertical: Spacing.five,
+  },
   heroSection: {
     width: '100%',
-    justifyContent: 'center',
-    flex: 1,
-    paddingVertical: Spacing.five,
     gap: Spacing.four,
   },
   headerRow: {
